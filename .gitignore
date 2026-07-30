@@ -1,0 +1,12 @@
+# Visual Studio / MSVC build outputs
+.vs/
+x64/
+x86/
+Debug/
+Release/
+out/
+build/
+*.exe
+*.obj
+*.pdb
+*.user
