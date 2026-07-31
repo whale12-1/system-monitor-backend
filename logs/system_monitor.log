@@ -1,0 +1,96 @@
+[2026-07-31 10:17:11.705] [info] [12876] System Monitor Backend starting...
+[2026-07-31 10:17:11.754] [info] [12876] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 10:17:11.756] [info] [9516] Collector thread started (interval: 500ms)
+[2026-07-31 10:17:24.099] [info] [34952] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 10:17:59.036] [info] [34952] [WebSocket] Client disconnected (, code: 1000). Total clients: 0
+[2026-07-31 17:18:35.269] [info] [12660] System Monitor Backend starting...
+[2026-07-31 17:18:35.325] [info] [12660] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 17:18:35.326] [info] [37352] Collector thread started (interval: 500ms)
+[2026-07-31 17:19:19.231] [info] [23100] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 17:19:46.604] [info] [23100] [WebSocket] Client connected! Total clients: 2
+[2026-07-31 17:34:56.583] [info] [5380] System Monitor Backend starting...
+[2026-07-31 17:34:56.627] [info] [5380] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 17:34:56.629] [info] [26864] Collector thread started (interval: 500ms)
+[2026-07-31 17:38:14.686] [info] [25120] System Monitor Backend starting...
+[2026-07-31 17:38:14.730] [info] [25120] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 17:38:14.732] [info] [10824] Collector thread started (interval: 500ms)
+[2026-07-31 17:38:46.316] [info] [26012] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 17:39:46.036] [info] [26012] [WebSocket] Client connected! Total clients: 2
+[2026-07-31 17:40:57.467] [info] [26012] [WebSocket] Client disconnected (uncleanly, code: 1006). Total clients: 1
+[2026-07-31 18:14:51.312] [info] [25268] System Monitor Backend starting...
+[2026-07-31 18:14:51.360] [info] [25268] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 18:14:51.362] [info] [10012] Collector thread started (interval: 500ms)
+[2026-07-31 18:14:52.026] [info] [12904] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 18:20:58.773] [info] [12904] [WebSocket] Client connected! Total clients: 2
+[2026-07-31 18:22:29.293] [info] [12904] [WebSocket] Client disconnected (uncleanly, code: 1006). Total clients: 1
+[2026-07-31 18:22:35.181] [info] [12904] [WebSocket] Client disconnected (, code: 1000). Total clients: 0
+[2026-07-31 18:28:08.402] [info] [41396] System Monitor Backend starting...
+[2026-07-31 18:28:08.447] [info] [41396] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 18:28:08.448] [info] [30784] Collector thread started (interval: 500ms)
+[2026-07-31 18:28:10.162] [info] [41564] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 18:28:35.900] [info] [41564] [WebSocket] Client disconnected (Connection closed, code: 1001). Total clients: 0
+[2026-07-31 18:30:56.933] [info] [21136] System Monitor Backend starting...
+[2026-07-31 18:30:56.978] [info] [21136] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 18:30:56.981] [info] [16320] Collector thread started (interval: 500ms)
+[2026-07-31 18:31:02.330] [info] [30884] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 18:38:15.953] [info] [9796] System Monitor Backend starting...
+[2026-07-31 18:38:15.996] [info] [9796] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 18:38:15.999] [info] [28616] Collector thread started (interval: 500ms)
+[2026-07-31 18:39:50.997] [info] [3532] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 18:41:22.949] [info] [33452] [HTTP POST /api/kill] Process PID 22376 killed successfully
+[2026-07-31 18:41:40.069] [info] [33452] [HTTP POST /api/kill] Process PID 27488 killed successfully
+[2026-07-31 18:44:30.150] [info] [3532] [WebSocket] Client disconnected (uncleanly, code: 1006). Total clients: 0
+[2026-07-31 18:44:52.471] [info] [3532] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 18:47:06.353] [info] [3532] [WebSocket] Client disconnected (uncleanly, code: 1006). Total clients: 0
+[2026-07-31 18:55:39.595] [info] [3532] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 18:57:04.667] [info] [3532] [WebSocket] Client disconnected (uncleanly, code: 1006). Total clients: 0
+[2026-07-31 18:58:28.451] [info] [38084] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 18:58:31.028] [info] [38084] [WebSocket] Client disconnected (Connection closed, code: 1001). Total clients: 0
+[2026-07-31 18:59:40.879] [info] [38084] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:03:30.908] [info] [38084] [WebSocket] Client disconnected (uncleanly, code: 1006). Total clients: 0
+[2026-07-31 19:04:37.109] [info] [11060] System Monitor Backend starting...
+[2026-07-31 19:04:37.149] [info] [11060] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:04:37.151] [info] [31152] Collector thread started (interval: 500ms)
+[2026-07-31 19:09:54.996] [info] [39320] System Monitor Backend starting...
+[2026-07-31 19:09:55.040] [info] [39320] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:09:55.042] [info] [23288] Collector thread started (interval: 500ms)
+[2026-07-31 19:09:55.825] [info] [25772] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:13:34.537] [info] [25604] System Monitor Backend starting...
+[2026-07-31 19:13:34.580] [info] [25604] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:13:34.583] [info] [24524] Collector thread started (interval: 500ms)
+[2026-07-31 19:13:50.923] [info] [32624] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:16:30.453] [info] [23080] System Monitor Backend starting...
+[2026-07-31 19:16:30.493] [info] [23080] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:16:30.495] [info] [37756] Collector thread started (interval: 500ms)
+[2026-07-31 19:16:36.516] [info] [14612] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:20:31.614] [info] [19792] System Monitor Backend starting...
+[2026-07-31 19:20:31.662] [info] [19792] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:20:31.664] [info] [37816] Collector thread started (interval: 500ms)
+[2026-07-31 19:20:39.883] [info] [30920] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:25:54.728] [info] [32176] System Monitor Backend starting...
+[2026-07-31 19:25:54.771] [info] [32176] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:25:54.773] [info] [41352] Collector thread started (interval: 500ms)
+[2026-07-31 19:27:05.718] [info] [2516] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:29:15.775] [info] [19904] System Monitor Backend starting...
+[2026-07-31 19:29:15.815] [info] [19904] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:29:15.817] [info] [17188] Collector thread started (interval: 500ms)
+[2026-07-31 19:30:58.224] [info] [9800] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:33:44.486] [info] [9800] [WebSocket] Client disconnected (uncleanly, code: 1006). Total clients: 0
+[2026-07-31 19:34:32.423] [info] [14840] System Monitor Backend starting...
+[2026-07-31 19:34:32.474] [info] [14840] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:34:32.476] [info] [19152] Collector thread started (interval: 500ms)
+[2026-07-31 19:34:38.208] [info] [15300] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:39:44.382] [info] [11456] System Monitor Backend starting...
+[2026-07-31 19:39:44.420] [info] [11456] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 19:39:44.422] [info] [32304] Collector thread started (interval: 500ms)
+[2026-07-31 19:40:16.655] [info] [35244] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 19:40:59.027] [info] [35244] [WebSocket] Client disconnected (Connection closed, code: 1001). Total clients: 0
+[2026-07-31 20:11:39.318] [info] [15344] System Monitor Backend starting...
+[2026-07-31 20:11:39.364] [info] [15344] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 20:11:39.366] [info] [42368] Collector thread started (interval: 500ms)
+[2026-07-31 20:11:39.592] [info] [31916] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 20:11:55.552] [info] [13572] System Monitor Backend starting...
+[2026-07-31 20:11:55.599] [info] [13572] Starting HTTP/WebSocket Server on port 18080
+[2026-07-31 20:11:55.602] [info] [14868] Collector thread started (interval: 500ms)
+[2026-07-31 20:11:56.909] [info] [23352] [WebSocket] Client connected! Total clients: 1
+[2026-07-31 20:12:16.948] [info] [23352] [WebSocket] Client disconnected (Connection closed, code: 1001). Total clients: 0

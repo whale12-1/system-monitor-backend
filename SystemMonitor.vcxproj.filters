@@ -83,6 +83,9 @@
     <ClInclude Include="src\platform\windows\WinGPUProvider\WinGPUProvider.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\Logger.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\.gitignore" />

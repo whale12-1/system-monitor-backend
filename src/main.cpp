@@ -4,9 +4,12 @@
 #include "platform/MetricsProviderFactory.h"
 #include "state/SharedState.h"
 #include "server/ServerApp.h"
+#include "Logger.h"
 
 int main() {
     // 1. Создаем провайдер метрик через фабрику (под нужную ОС)
+    Logger::Init();
+    LOG_INFO("System Monitor Backend starting...");
     auto provider = MetricsProviderFactory::Create();
 
     // 2. Инициализируем хранилище метрик

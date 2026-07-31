@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "ServerApp.h"
+#include "Logger.h"
 #include <iostream>
 #include <chrono>
 
@@ -43,6 +44,7 @@ auto SerializeGpuMetrics = [](const std::vector<GPUMetrics>& gpuList) {
 
 void ServerApp::StartCollectorThread() {
     m_CollectorThread = std::jthread([this](std::stop_token stopToken) {
+        LOG_INFO("Collector thread started (interval: 500ms)");
         auto prevTime = std::chrono::steady_clock::now();
         NetworkMetrics prevNet = m_Provider->GetNetworkMetrics();
 
@@ -109,16 +111,18 @@ void ServerApp::StartCollectorThread() {
                             try {
                                 conn->send_text(payload);
                             }
-                            catch (...) {}
+                            catch (const std::exception& e) {
+                                LOG_WARN("Failed to send WebSocket message: {}", e.what());
+                            }
                         }
                     }
                 }
             }
             catch (const std::exception& e) {
-                std::cerr << "[Collector Thread Exception] " << e.what() << std::endl;
+                LOG_ERROR("[Collector Thread Exception] {}", e.what());
             }
             catch (...) {
-                std::cerr << "[Collector Thread Exception] Unknown error" << std::endl;
+                LOG_ERROR("[Collector Thread Exception] Unknown error");
             }
         }
         });
@@ -132,15 +136,15 @@ void ServerApp::SetupRoutes() {
         .onopen([this](crow::websocket::connection& conn) {
         std::lock_guard<std::mutex> lock(m_WsMutex);
         m_ActiveConnections.insert(&conn);
-        std::cout << "[WebSocket] Client connected! Total: " << m_ActiveConnections.size() << "\n";
+        LOG_INFO("[WebSocket] Client connected! Total clients: {}", m_ActiveConnections.size());
             })
         .onclose([this](crow::websocket::connection& conn, const std::string& reason, uint16_t status_code) {
         std::lock_guard<std::mutex> lock(m_WsMutex);
         m_ActiveConnections.erase(&conn);
-        std::cout << "[WebSocket] Client disconnected (" << reason << "). Total: " << m_ActiveConnections.size() << "\n";
+        LOG_INFO("[WebSocket] Client disconnected ({}, code: {}). Total clients: {}", reason, status_code, m_ActiveConnections.size());
             })
         .onmessage([](crow::websocket::connection&, const std::string& data, bool) {
-        std::cout << "[WebSocket] Received: " << data << "\n";
+        LOG_DEBUG("[WebSocket] Received message: {}", data);
             });
 
     // ------------------------------------------------------------------------
@@ -267,12 +271,20 @@ void ServerApp::SetupRoutes() {
     CROW_ROUTE(m_App, "/api/kill").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
         auto body = crow::json::load(req.body);
         if (!body || !body.has("pid")) {
+            LOG_WARN("[HTTP POST /api/kill] Bad JSON or missing pid");
             crow::response response(400, "{\"error\": \"Bad JSON or missing pid\"}");
             return response;
         }
 
         unsigned long pid = static_cast<unsigned long>(body["pid"].i());
         bool ok = m_Provider->KillProcess(pid);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/kill] Process PID {} killed successfully", pid);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/kill] Failed to kill process PID {}", pid);
+        }
 
         crow::json::wvalue responseJson;
         responseJson["success"] = ok;
@@ -285,8 +297,7 @@ void ServerApp::SetupRoutes() {
 }
 
 void ServerApp::Run(uint16_t port) {
-    std::cout << "Starting System Monitor HTTP/WebSocket Server on http://localhost:" << port << "\n";
-    std::cout << "WebSocket Endpoint available at ws://localhost:" << port << "/ws\n";
+    LOG_INFO("Starting HTTP/WebSocket Server on port {}", port);
 
     m_App.port(port).multithreaded().run();
 }

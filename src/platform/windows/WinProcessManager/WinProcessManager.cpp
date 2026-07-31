@@ -18,6 +18,49 @@ static uint64_t GetTotalSystemTime() {
     return 0;
 }
 
+#include <vector>
+#include <cstdint>
+
+// Явно объявляем структуру EX2, если в текущей версии WinSDK её нет в заголовочных файлах
+typedef struct _PROCESS_MEMORY_COUNTERS_EX2_CUSTOM {
+    DWORD cb;
+    DWORD PageFaultCount;
+    SIZE_T PeakWorkingSetSize;
+    SIZE_T WorkingSetSize;
+    SIZE_T QuotaPeakPagedPoolUsage;
+    SIZE_T QuotaPagedPoolUsage;
+    SIZE_T QuotaPeakNonPagedPoolUsage;
+    SIZE_T QuotaNonPagedPoolUsage;
+    SIZE_T PagefileUsage;
+    SIZE_T PeakPagefileUsage;
+    SIZE_T PrivateUsage;
+    SIZE_T PrivateWorkingSetSize; // <--- Точное значение из Диспетчера задач
+    SIZE_T SharedWorkingSetSize;
+} PROCESS_MEMORY_COUNTERS_EX2_CUSTOM;
+
+static uint64_t GetExactPrivateWorkingSet(HANDLE hProcess) {
+    PROCESS_MEMORY_COUNTERS_EX2_CUSTOM pmcEx2{};
+    pmcEx2.cb = sizeof(PROCESS_MEMORY_COUNTERS_EX2_CUSTOM);
+
+    // Запрашиваем метрики через расширенный буфер EX2
+    if (GetProcessMemoryInfo(hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmcEx2), sizeof(pmcEx2))) {
+        // Если ОС заполнила PrivateWorkingSetSize — возвращаем его
+        if (pmcEx2.PrivateWorkingSetSize > 0) {
+            return static_cast<uint64_t>(pmcEx2.PrivateWorkingSetSize);
+        }
+    }
+
+    // Резервный вариант, если процесс находится в глубоком с Animate/Suspended состоянии
+    PROCESS_MEMORY_COUNTERS pmc{};
+    if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
+        return static_cast<uint64_t>(pmc.WorkingSetSize);
+    }
+
+    return 0;
+}
+
+#include <sysinfoapi.h>
+
 std::vector<ProcessMetrics> WinProcessManager::GetProcesses() const {
     std::vector<ProcessMetrics> ProcessVector;
 
@@ -36,7 +79,10 @@ std::vector<ProcessMetrics> WinProcessManager::GetProcesses() const {
 
     PROCESSENTRY32W Process;
     Process.dwSize = sizeof(PROCESSENTRY32W);
-    Process32FirstW(CurrentS.get(), &Process);
+
+    if (!Process32FirstW(CurrentS.get(), &Process)) {
+        return ProcessVector;
+    }
 
     do {
         ProcessMetrics info;
@@ -45,14 +91,16 @@ std::vector<ProcessMetrics> WinProcessManager::GetProcesses() const {
         std::wstring wName(Process.szExeFile);
         info.Name = std::string(wName.begin(), wName.end());
 
+        // Игнорируем System Idle Process (0) и System (4)
         if (info.Pid != 0 && info.Pid != 4) {
-            UniqueHandle hProcess(OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, info.Pid));
-            if (hProcess.get() != NULL) {
-                PROCESS_MEMORY_COUNTERS pmc;
-                if (GetProcessMemoryInfo(hProcess.get(), &pmc, sizeof(pmc))) {
-                    info.MemoryUsage = static_cast<uint64_t>(pmc.WorkingSetSize);
-                }
+            // Флаг PROCESS_QUERY_LIMITED_INFORMATION более безопасен для системных процессов
+            UniqueHandle hProcess(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, info.Pid));
 
+            if (hProcess.get() != NULL) {
+                // Точный приватный рабочий набор
+                info.MemoryUsage = GetExactPrivateWorkingSet(hProcess.get());
+
+                // 2. Получение полного пути к исполняемому файлу
                 wchar_t pathBuffer[MAX_PATH];
                 DWORD size = MAX_PATH;
                 if (QueryFullProcessImageNameW(hProcess.get(), 0, pathBuffer, &size)) {
@@ -63,6 +111,7 @@ std::vector<ProcessMetrics> WinProcessManager::GetProcesses() const {
                     info.ExecutablePath = "N/A";
                 }
 
+                // 3. Корректный расчет CPU (без умножения на numCores!)
                 FILETIME ftCreation, ftExit, ftKernel, ftUser;
                 if (GetProcessTimes(hProcess.get(), &ftCreation, &ftExit, &ftKernel, &ftUser)) {
                     uint64_t currentProcTime = FileTimeToUint64(ftKernel) + FileTimeToUint64(ftUser);
@@ -70,7 +119,14 @@ std::vector<ProcessMetrics> WinProcessManager::GetProcesses() const {
 
                     if (prevProcessTimes.count(info.Pid) > 0 && systemTimeDelta > 0) {
                         uint64_t procTimeDelta = currentProcTime - prevProcessTimes[info.Pid];
-                        info.CpuUsage = (static_cast<double>(procTimeDelta) / systemTimeDelta) * 100.0;
+
+                        // systemTimeDelta — это суммарное время всех ядер.
+                        // Деление procTimeDelta / systemTimeDelta уже дает корректную долю от 100% всей системы.
+                        info.CpuUsage = (static_cast<double>(procTimeDelta) / static_cast<double>(systemTimeDelta)) * 100.0;
+
+                        // Ограничение диапазона от 0% до 100%
+                        if (info.CpuUsage > 100.0) info.CpuUsage = 100.0;
+                        if (info.CpuUsage < 0.0) info.CpuUsage = 0.0;
                     }
                     else {
                         info.CpuUsage = 0.0;
@@ -83,6 +139,7 @@ std::vector<ProcessMetrics> WinProcessManager::GetProcesses() const {
 
     } while (Process32NextW(CurrentS.get(), &Process));
 
+    // Обновляем статические данные для следующего тика
     prevProcessTimes = std::move(nextProcessTimes);
     g_previousTotalSystemTime = currentSystemTime;
 
