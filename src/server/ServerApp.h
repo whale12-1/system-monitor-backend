@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "crow.h"
+#include "crow/middlewares/cors.h"
 #include "core/ISystemMetricsProvider.h"
 #include "state/SharedState.h"
 
@@ -28,7 +29,7 @@ private:
 private:
     SharedState& m_State;
     std::unique_ptr<ISystemMetricsProvider> m_Provider;
-    crow::SimpleApp m_App;
+    crow::App<crow::CORSHandler> m_App;
 
     // WebSocket соединения и мьютекс
     std::mutex m_WsMutex;

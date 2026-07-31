@@ -6,6 +6,13 @@
 ServerApp::ServerApp(SharedState& state, std::unique_ptr<ISystemMetricsProvider> provider)
     : m_State(state), m_Provider(std::move(provider))
 {
+    auto& cors = m_App.get_middleware<crow::CORSHandler>();
+
+    cors.global()
+        .headers("Origin", "Content-Type", "Accept", "Authorization")
+        .methods(crow::HTTPMethod::POST, crow::HTTPMethod::GET, crow::HTTPMethod::OPTIONS)
+        .origin("*");
+
     SetupRoutes();
     StartCollectorThread();
 }
@@ -136,14 +143,6 @@ void ServerApp::SetupRoutes() {
         std::cout << "[WebSocket] Received: " << data << "\n";
             });
 
-    CROW_ROUTE(m_App, "/api/kill").methods(crow::HTTPMethod::OPTIONS)([](const crow::request&) {
-        crow::response res(200);
-        res.add_header("Access-Control-Allow-Origin", "*");
-        res.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
-        res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        return res;
-        });
-
     // ------------------------------------------------------------------------
     // HTTP REST Routes
     // ------------------------------------------------------------------------
@@ -178,7 +177,6 @@ void ServerApp::SetupRoutes() {
         res["disks"] = std::move(diskList);
 
         crow::response response(res);
-        response.add_header("Access-Control-Allow-Origin", "*");
         return response;
         });
     // GET /api/metrics
@@ -195,7 +193,6 @@ void ServerApp::SetupRoutes() {
         res["uptime_seconds"] = lastSnap.UptimeSeconds;
         res["gpu_metrics"] = SerializeGpuMetrics(lastSnap.GPUMetrics);
         crow::response response(res);
-        response.add_header("Access-Control-Allow-Origin", "*");
         return response;
         });
 
@@ -221,7 +218,6 @@ void ServerApp::SetupRoutes() {
         res["processes"] = std::move(procList);
 
         crow::response response(res);
-        response.add_header("Access-Control-Allow-Origin", "*");
         return response;
         });
 
@@ -241,7 +237,6 @@ void ServerApp::SetupRoutes() {
         StartUpItems["count"] = StartupList.size();
         StartUpItems["startup_items"] = std::move(StartupList);
         crow::response response(StartUpItems);
-        response.add_header("Access-Control-Allow-Origin", "*");
         return response;
         });
 
@@ -264,7 +259,6 @@ void ServerApp::SetupRoutes() {
         res["sensors"] = std::move(list);
 
         crow::response response(res);
-        response.add_header("Access-Control-Allow-Origin", "*");
         return response;
         });
 
@@ -274,7 +268,6 @@ void ServerApp::SetupRoutes() {
         auto body = crow::json::load(req.body);
         if (!body || !body.has("pid")) {
             crow::response response(400, "{\"error\": \"Bad JSON or missing pid\"}");
-            response.add_header("Access-Control-Allow-Origin", "*");
             return response;
         }
 
@@ -286,8 +279,6 @@ void ServerApp::SetupRoutes() {
         responseJson["pid"] = pid;
 
         crow::response response(ok ? 200 : 500, responseJson);
-        response.add_header("Access-Control-Allow-Origin", "*");
-        response.add_header("Access-Control-Allow-Headers", "Content-Type");
         return response;
         });
 

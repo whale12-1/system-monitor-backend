@@ -44,6 +44,9 @@
     <ClInclude Include="src\server\ServerApp.h" />
     <ClInclude Include="src\state\SharedState.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\.gitignore" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

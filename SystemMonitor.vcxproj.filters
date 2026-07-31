@@ -84,4 +84,7 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\.gitignore" />
+  </ItemGroup>
 </Project>
