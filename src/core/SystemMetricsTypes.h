@@ -1,22 +1,23 @@
-#pragma once
+п»ї#pragma once
 #include <string>
 struct StartupItem {
 	std::string Name;
 	std::string Command;
 	std::string Location;
+	bool IsEnabled = true; // в†ђ Р”РѕР±Р°РІРёС‚СЊ СЌС‚Рѕ РїРѕР»Рµ
 };
 
 struct TemperatureMetrics {
-	std::string SensorName; // Название датчика (например, "CPU Thermal Zone")
-	double Celsius;         // Температура в градусах Цельсия
+	std::string SensorName; // РќР°Р·РІР°РЅРёРµ РґР°С‚С‡РёРєР° (РЅР°РїСЂРёРјРµСЂ, "CPU Thermal Zone")
+	double Celsius;         // РўРµРјРїРµСЂР°С‚СѓСЂР° РІ РіСЂР°РґСѓСЃР°С… Р¦РµР»СЊСЃРёСЏ
 };
 
 struct OSMetrics {
-	std::string OsName;       // Например: "Windows 11 Home" или "Windows 10"
+	std::string OsName;       // РќР°РїСЂРёРјРµСЂ: "Windows 11 Home" РёР»Рё "Windows 10"
 	std::string Architecture; // "x64", "x86", "ARM64"
-	std::string ComputerName; // Имя ПК в сети
-	std::string UserName;     // Имя текущего пользователя
-	std::string BuildNumber;  // Номер сборки (например, "22631")
+	std::string ComputerName; // РРјСЏ РџРљ РІ СЃРµС‚Рё
+	std::string UserName;     // РРјСЏ С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	std::string BuildNumber;  // РќРѕРјРµСЂ СЃР±РѕСЂРєРё (РЅР°РїСЂРёРјРµСЂ, "22631")
 };
 
 struct ProcessTimeSnapshot {
@@ -27,7 +28,7 @@ struct ProcessTimeSnapshot {
 struct DiskMetrics {
 	std::string DriveModel;
 	std::string DriveLetter;  // "C:\"
-	std::string DriveType;    // "Fixed", "Removable" и т.д.
+	std::string DriveType;    // "Fixed", "Removable" Рё С‚.Рґ.
 	uint64_t TotalBytes = 0;
 	uint64_t FreeBytes = 0;
 	double PercentOfUsage = 0.0;
@@ -42,8 +43,8 @@ struct ProcessMetrics {
 };
 
 struct NetworkMetrics {
-	uint64_t BytesReceived = 0; // Скачано байт (InOctets)
-	uint64_t BytesSent = 0;     // Отправлено байт (OutOctets)
+	uint64_t BytesReceived = 0; // РЎРєР°С‡Р°РЅРѕ Р±Р°Р№С‚ (InOctets)
+	uint64_t BytesSent = 0;     // РћС‚РїСЂР°РІР»РµРЅРѕ Р±Р°Р№С‚ (OutOctets)
 };
 
 struct MemoryMetrics {

@@ -235,6 +235,7 @@ void ServerApp::SetupRoutes() {
             Com["name"] = S.Name;
             Com["command"] = S.Command;
             Com["location"] = S.Location;
+            Com["is_enabled"] = S.IsEnabled;
             StartupList.push_back(std::move(Com));
         }
         crow::json::wvalue StartUpItems;
