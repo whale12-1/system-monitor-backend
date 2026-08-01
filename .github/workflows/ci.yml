@@ -34,17 +34,13 @@ jobs:
         dotnet publish -c Release -r win-x64
 
     # Устанавливаем vcpkg и подключаем интеграцию для MSBuild
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
-      with:
-        vcpkgGitCommitId: 'latest'
-
-    # Устанавливаем crow через vcpkg
-    - name: Install dependencies via vcpkg
+    # 1. Устанавливаем Crow через уже встроенный vcpkg
+    - name: Install Crow via vcpkg
       run: |
-        vcpkg install crow:x64-windows
+        $env:VCPKG_INSTALLATION_ROOT\vcpkg.exe install crow:x64-windows
 
-    # Сборка C++ Backend с передачей пути к vcpkg
+    # 2. Собираем C++ Backend и интегрируем vcpkg в MSBuild
     - name: Build C++ Backend
       run: |
-        msbuild SystemMonitor.sln /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnableManifest=true
+        $vcpkgTargets = "$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\msbuild\vcpkg.targets"
+        msbuild SystemMonitor.sln /p:Configuration=Release /p:Platform=x64 "/p:ForceImportBeforeCppTargets=$vcpkgTargets"
