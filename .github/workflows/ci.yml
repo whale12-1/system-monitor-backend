@@ -33,10 +33,10 @@ jobs:
         cd HardwareWrapper
         dotnet publish -c Release -r win-x64
 
-# 1. Устанавливаем Crow через vcpkg
-    - name: Install Crow via vcpkg
+# 1. Устанавливаем все C++ библиотеки через vcpkg
+    - name: Install C++ dependencies via vcpkg
       run: |
-        & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install crow:x64-windows
+        & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install crow:x64-windows spdlog:x64-windows
 
     # 2. Собираем C++ Backend и интегрируем vcpkg в MSBuild
     - name: Build C++ Backend
