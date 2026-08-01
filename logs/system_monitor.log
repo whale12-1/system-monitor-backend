@@ -142,3 +142,25 @@
 [2026-08-01 09:08:45.978] [info] [15704] [WebSocket] Client disconnected (Connection closed, code: 1001). Total clients: 0
 [2026-08-01 09:08:55.591] [info] [15704] [WebSocket] Client connected! Total clients: 1
 [2026-08-01 09:14:46.215] [info] [15704] [WebSocket] Client disconnected (Connection closed, code: 1001). Total clients: 0
+[2026-08-01 09:52:24.829] [info] [24748] System Monitor Backend starting...
+[2026-08-01 09:52:24.868] [info] [24748] Starting HTTP/WebSocket Server on port 18080
+[2026-08-01 09:52:24.870] [info] [6620] Collector thread started (interval: 500ms)
+[2026-08-01 10:02:16.214] [info] [6248] System Monitor Backend starting...
+[2026-08-01 10:02:16.268] [info] [6248] Starting HTTP/WebSocket Server on port 18080
+[2026-08-01 10:02:16.271] [info] [30852] Collector thread started (interval: 500ms)
+[2026-08-01 10:07:10.700] [info] [8000] System Monitor Backend starting...
+[2026-08-01 10:07:10.743] [info] [8000] Starting HTTP/WebSocket Server on port 18080
+[2026-08-01 10:07:10.745] [info] [24208] Collector thread started (interval: 500ms)
+[2026-08-01 10:07:21.113] [info] [42420] [WebSocket] Client connected! Total clients: 1
+[2026-08-01 10:17:58.040] [info] [21888] System Monitor Backend starting...
+[2026-08-01 10:17:58.077] [info] [21888] Starting HTTP/WebSocket Server on port 18080
+[2026-08-01 10:17:58.079] [info] [42508] Collector thread started (interval: 500ms)
+[2026-08-01 10:32:07.350] [info] [16424] System Monitor Backend starting...
+[2026-08-01 10:32:07.394] [info] [28884] Collector thread started (interval: 500ms)
+[2026-08-01 10:32:07.394] [info] [39068] Starting HTTP/WebSocket Server on port 18080
+[2026-08-01 10:32:07.497] [info] [3132] [WebSocket] Client connected! Total clients: 1
+[2026-08-01 10:32:07.552] [error] [16424] [Backend] Ошибка запуска SystemMonitorUI.exe. Код: 2
+[2026-08-01 10:32:27.172] [info] [3132] [WebSocket] Client disconnected (Connection closed, code: 1001). Total clients: 0
+[2026-08-01 11:12:04.638] [info] [3792] System Monitor Backend starting...
+[2026-08-01 11:12:04.702] [info] [20396] Collector thread started (interval: 500ms)
+[2026-08-01 11:12:04.702] [info] [20932] Starting HTTP/WebSocket Server on port 18080

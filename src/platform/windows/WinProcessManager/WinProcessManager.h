@@ -1,7 +1,7 @@
-#pragma once
+п»ї#pragma once
 #include <vector>
 #include <cstdint>
-#include "core/SystemMetricsTypes.h" // Укажи актуальный путь к типам данных
+#include "core/SystemMetricsTypes.h" // РЈРєР°Р¶Рё Р°РєС‚СѓР°Р»СЊРЅС‹Р№ РїСѓС‚СЊ Рє С‚РёРїР°Рј РґР°РЅРЅС‹С…
 
 class WinProcessManager {
 public:

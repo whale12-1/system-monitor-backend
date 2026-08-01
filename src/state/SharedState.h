@@ -1,8 +1,8 @@
-#pragma once
+п»ї#pragma once
 #include "./core/SystemMetricsTypes.h"
 #include <shared_mutex>
 #include <mutex>
-// Структура скорости сети
+// РЎС‚СЂСѓРєС‚СѓСЂР° СЃРєРѕСЂРѕСЃС‚Рё СЃРµС‚Рё
 struct NetworkUsage {
     double DownloadBytesPerSec = 0.0;
     double UploadBytesPerSec = 0.0;
@@ -11,7 +11,7 @@ struct NetworkUsage {
 struct SystemSnapshot {
     MemoryMetrics MemorySnap{};
     double CPUUsage = 0.0;
-    NetworkUsage NetworkSnap{}; // <-- Добавили сеть
+    NetworkUsage NetworkSnap{}; // <-- Р”РѕР±Р°РІРёР»Рё СЃРµС‚СЊ
     std::vector<ProcessMetrics> Processes;
     std::vector<TemperatureMetrics> Temperatures;
     uint64_t UptimeSeconds = 0;
@@ -26,7 +26,7 @@ private:
 public:
     SharedState() = default;
 
-    // Сбор данных снаружи (фоновым потоком)
+    // РЎР±РѕСЂ РґР°РЅРЅС‹С… СЃРЅР°СЂСѓР¶Рё (С„РѕРЅРѕРІС‹Рј РїРѕС‚РѕРєРѕРј)
     void Update(
         const MemoryMetrics& mem,
         double cpu,
@@ -46,7 +46,7 @@ public:
         m_CurrentSnapshot.GPUMetrics = gpumetrics;
     }
 
-    // Потокобезопасное чтение для Crow-хэндлеров
+    // РџРѕС‚РѕРєРѕР±РµР·РѕРїР°СЃРЅРѕРµ С‡С‚РµРЅРёРµ РґР»СЏ Crow-С…СЌРЅРґР»РµСЂРѕРІ
     SystemSnapshot GetSnapshot() const {
         std::shared_lock<std::shared_mutex> lock(m_RWMutex);
         return m_CurrentSnapshot;

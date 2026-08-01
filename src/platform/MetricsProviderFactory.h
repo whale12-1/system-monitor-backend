@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "core/ISystemMetricsProvider.h"
 #include <memory>
 #include "windows/WindowsApiMetricsProvider.h"
@@ -9,7 +9,7 @@ public:
 #if defined(_WIN32) || defined(_WIN64)
         return std::make_unique<WindowsApiMetricsProvider>();
 #elif defined(__linux__)
-        return std::make_unique<LinuxMetricsProvider>(); // В будущем для /proc
+        return std::make_unique<LinuxMetricsProvider>(); // Р’ Р±СѓРґСѓС‰РµРј РґР»СЏ /proc
 #else
 #error "Unsupported Platform"
 #endif

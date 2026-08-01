@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -9,27 +9,27 @@
 class Logger {
 public:
     static void Init() {
-        // 1. Логгер для консоли (с цветным выводом)
+        // 1. Р›РѕРіРіРµСЂ РґР»СЏ РєРѕРЅСЃРѕР»Рё (СЃ С†РІРµС‚РЅС‹Рј РІС‹РІРѕРґРѕРј)
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         console_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%t] %v");
 
-        // 2. Ротируемый логгер в файл (макс. 5 МБ, максимум 3 файла)
+        // 2. Р РѕС‚РёСЂСѓРµРјС‹Р№ Р»РѕРіРіРµСЂ РІ С„Р°Р№Р» (РјР°РєСЃ. 5 РњР‘, РјР°РєСЃРёРјСѓРј 3 С„Р°Р№Р»Р°)
         auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             "logs/system_monitor.log", 1024 * 1024 * 5, 3);
         file_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
 
-        // Объединяем вывод в один мульти-логгер
+        // РћР±СЉРµРґРёРЅСЏРµРј РІС‹РІРѕРґ РІ РѕРґРёРЅ РјСѓР»СЊС‚Рё-Р»РѕРіРіРµСЂ
         std::vector<spdlog::sink_ptr> sinks{ console_sink, file_sink };
         auto logger = std::make_shared<spdlog::logger>("app", sinks.begin(), sinks.end());
 
         logger->set_level(spdlog::level::debug);
-        logger->flush_on(spdlog::level::info); // Автоматический сброс на диск при INFO и выше
+        logger->flush_on(spdlog::level::info); // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРёР№ СЃР±СЂРѕСЃ РЅР° РґРёСЃРє РїСЂРё INFO Рё РІС‹С€Рµ
 
         spdlog::set_default_logger(logger);
     }
 };
 
-// Удобные глобальные макросы для вызова
+// РЈРґРѕР±РЅС‹Рµ РіР»РѕР±Р°Р»СЊРЅС‹Рµ РјР°РєСЂРѕСЃС‹ РґР»СЏ РІС‹Р·РѕРІР°
 #define LOG_TRACE(...) SPDLOG_TRACE(__VA_ARGS__)
 #define LOG_DEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
 #define LOG_INFO(...)  SPDLOG_INFO(__VA_ARGS__)

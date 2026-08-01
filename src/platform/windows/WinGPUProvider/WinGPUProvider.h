@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <vector>
 #include <windows.h>
 #include <dxgi.h>
@@ -50,7 +50,7 @@ private:
     ADL_Overdrive5_CurrentActivity_Get_t ADL_Overdrive5_CurrentActivity_Get = nullptr;
 
     // ------------------------------------------------------------------------
-    // Внутренние методы инициализации и сбора
+    // Р’РЅСѓС‚СЂРµРЅРЅРёРµ РјРµС‚РѕРґС‹ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё Рё СЃР±РѕСЂР°
     // ------------------------------------------------------------------------
     void InitNvApi();
     void InitAmdAdl();

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <memory>
 #include <mutex>
 #include <unordered_set>
@@ -15,11 +15,11 @@ public:
     ServerApp(SharedState& state, std::unique_ptr<ISystemMetricsProvider> provider);
     ~ServerApp();
 
-    // Запрещаем копирование
+    // Р—Р°РїСЂРµС‰Р°РµРј РєРѕРїРёСЂРѕРІР°РЅРёРµ
     ServerApp(const ServerApp&) = delete;
     ServerApp& operator=(const ServerApp&) = delete;
 
-    // Запуск сервера на указанном порту
+    // Р—Р°РїСѓСЃРє СЃРµСЂРІРµСЂР° РЅР° СѓРєР°Р·Р°РЅРЅРѕРј РїРѕСЂС‚Сѓ
     void Run(uint16_t port = 18080);
 
 private:
@@ -31,10 +31,10 @@ private:
     std::unique_ptr<ISystemMetricsProvider> m_Provider;
     crow::App<crow::CORSHandler> m_App;
 
-    // WebSocket соединения и мьютекс
+    // WebSocket СЃРѕРµРґРёРЅРµРЅРёСЏ Рё РјСЊСЋС‚РµРєСЃ
     std::mutex m_WsMutex;
     std::unordered_set<crow::websocket::connection*> m_ActiveConnections;
 
-    // Фоновый поток сбора
+    // Р¤РѕРЅРѕРІС‹Р№ РїРѕС‚РѕРє СЃР±РѕСЂР°
     std::jthread m_CollectorThread;
 };

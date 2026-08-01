@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+п»ї#define _CRT_SECURE_NO_WARNINGS
 #include "ServerApp.h"
 #include "Logger.h"
 #include <iostream>
@@ -66,17 +66,17 @@ void ServerApp::StartCollectorThread() {
                 prevTime = currentTime;
                 prevNet = currentNet;
 
-                // Сбор метрик через абстрактный провайдер
+                // РЎР±РѕСЂ РјРµС‚СЂРёРє С‡РµСЂРµР· Р°Р±СЃС‚СЂР°РєС‚РЅС‹Р№ РїСЂРѕРІР°Р№РґРµСЂ
                 MemoryMetrics mem = m_Provider->GetMemoryMetrics();
                 double cpuUsage = m_Provider->GetCPUMetrics();
                 auto processes = m_Provider->GetProcesses();
                 auto tempreture = m_Provider->GetTemperatures();
                 uint64_t uptime = m_Provider->GetTickTime();
                 auto gpuUsage = m_Provider->GetGPUMetrics();
-                // Обновляем состояние
+                // РћР±РЅРѕРІР»СЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
                 m_State.Update(mem, cpuUsage, netUsage, std::move(processes),std::move(tempreture), uptime,std::move(gpuUsage));
 
-                // Рассылка по WebSocket
+                // Р Р°СЃСЃС‹Р»РєР° РїРѕ WebSocket
                 std::lock_guard<std::mutex> lock(m_WsMutex);
                 if (!m_ActiveConnections.empty()) {
                     SystemSnapshot lastSnap = m_State.GetSnapshot();
@@ -90,7 +90,7 @@ void ServerApp::StartCollectorThread() {
                     wsMsg["uptime_seconds"] = lastSnap.UptimeSeconds;
 
                     std::vector<crow::json::wvalue> tempArray;
-                    tempArray.reserve(lastSnap.Temperatures.size()); // Оптимизация выделения памяти
+                    tempArray.reserve(lastSnap.Temperatures.size()); // РћРїС‚РёРјРёР·Р°С†РёСЏ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
 
                     for (const auto& t : lastSnap.Temperatures) {
                         crow::json::wvalue item;
@@ -99,7 +99,7 @@ void ServerApp::StartCollectorThread() {
                         tempArray.push_back(std::move(item));
                     }
 
-                    // 3. Кладем вектор в итоговое сообщение (если вектор пуст, улетит пустой массив [])
+                    // 3. РљР»Р°РґРµРј РІРµРєС‚РѕСЂ РІ РёС‚РѕРіРѕРІРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ (РµСЃР»Рё РІРµРєС‚РѕСЂ РїСѓСЃС‚, СѓР»РµС‚РёС‚ РїСѓСЃС‚РѕР№ РјР°СЃСЃРёРІ [])
                     wsMsg["temperatures"] = std::move(tempArray);
 
                     wsMsg["gpu_metrics"] = SerializeGpuMetrics(lastSnap.GPUMetrics);
