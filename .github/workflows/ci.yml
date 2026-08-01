@@ -35,11 +35,11 @@ jobs:
 
 # 1. Скачиваем и настраиваем Qt6
     - name: Install Qt
-      uses: install-qt/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
-        version: '6.1.0'          # Твоя версия Qt
+        version: '6.7.2'          # Укажи нужную версию Qt
         target: 'desktop'
-        arch: 'win64_msvc2019_64' # Архитектура под Visual Studio
+        arch: 'win64_msvc2019_64'
         
     # 2. Устанавливаем C++ библиотеки (crow, spdlog и т.д.)
     - name: Install C++ dependencies via vcpkg
