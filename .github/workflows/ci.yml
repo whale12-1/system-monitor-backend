@@ -1,0 +1,40 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ "main", "master", "dev" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    # 1. Скачиваем репозиторий
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    # 2. Настраиваем .NET SDK для сборки HardwareWrapper (Native AOT)
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Укажи свою версию .NET (8.0 или 9.0)
+
+    # 3. Добавляем MSVC (C++ компилятор) в PATH
+    - name: Setup MSVC developer command prompt
+      uses: ilammy/msvc-dev-cmd@v1
+
+    # 4. Собираем C# Native AOT библиотеку
+    - name: Build HardwareWrapper (C# Native AOT)
+      run: |
+        cd HardwareWrapper
+        dotnet publish -c Release -r win-x64
+
+    # 5. Собираем C++ Backend через MSBuild / CMake
+    # (замени путь к .sln или вызов cmake под свой проект)
+    - name: Build C++ Backend
+      run: |
+        msbuild SystemMonitor.sln /p:Configuration=Release /p:Platform=x64
