@@ -33,8 +33,18 @@ jobs:
         cd HardwareWrapper
         dotnet publish -c Release -r win-x64
 
-    # 5. Собираем C++ Backend через MSBuild / CMake
-    # (замени путь к .sln или вызов cmake под свой проект)
+    # Устанавливаем vcpkg и подключаем интеграцию для MSBuild
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgGitCommitId: 'latest'
+
+    # Устанавливаем crow через vcpkg
+    - name: Install dependencies via vcpkg
+      run: |
+        vcpkg install crow:x64-windows
+
+    # Сборка C++ Backend с передачей пути к vcpkg
     - name: Build C++ Backend
       run: |
-        msbuild SystemMonitor.sln /p:Configuration=Release /p:Platform=x64
+        msbuild SystemMonitor.sln /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnableManifest=true
