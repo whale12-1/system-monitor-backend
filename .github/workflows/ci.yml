@@ -33,13 +33,22 @@ jobs:
         cd HardwareWrapper
         dotnet publish -c Release -r win-x64
 
-# 1. Устанавливаем все C++ библиотеки через vcpkg
+# 1. Скачиваем и настраиваем Qt6
+    - name: Install Qt
+      uses: jurplel/install-qt@v4
+      with:
+        version: '6.1.0'      # Укажи свою версию Qt (например, 6.7.2 или 6.5.3)
+        target: 'desktop'
+        arch: 'win64_msvc2019_64' # Выбери компилятор под 64-битную MSVC
+        cached: 'true'
+
+    # 2. Устанавливаем C++ библиотеки (crow, spdlog и т.д.)
     - name: Install C++ dependencies via vcpkg
       run: |
         & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install crow:x64-windows spdlog:x64-windows
 
-    # 2. Собираем C++ Backend и интегрируем vcpkg в MSBuild
-    - name: Build C++ Backend
+    # 3. Собираем проект
+    - name: Build C++ Backend & Frontend
       run: |
         $vcpkgTargets = "$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\msbuild\vcpkg.targets"
         msbuild SystemMonitor.sln /p:Configuration=Release /p:Platform=x64 "/p:ForceImportBeforeCppTargets=$vcpkgTargets"
