@@ -69,6 +69,9 @@ public:
     bool RemoveStartupItem(const std::string& name, const std::string& location) const override {
         return m_StartupManager.RemoveStartupItem(name, location);
     }
+    bool EnableStartupItem(const std::string& name, const std::string& location) const {
+        return m_StartupManager.EnableStartupItem(name, location);
+    }
 
     // --- Температуры ---
     std::vector<TemperatureMetrics> GetTemperatures() const override {
@@ -81,4 +84,5 @@ public:
     std::vector<GPUMetrics> GetGPUMetrics() const {
         return m_GPUProvider.GetGPUMetrics();
     }
+
 };

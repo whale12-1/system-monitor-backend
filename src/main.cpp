@@ -10,7 +10,7 @@
 #include <thread>
 #include <chrono>
 
-int main() {
+int main(int argc, char* argv[]) {
     Logger::Init();
     LOG_INFO("System Monitor Backend starting...");
 
@@ -32,7 +32,9 @@ int main() {
     std::this_thread::sleep_for(std::chrono::milliseconds(150));
 
     // 5. Автоматически запускаем UI
-    LaunchFrontendUI();
+    if (!LaunchFrontendUI(argc, argv)) {
+        std::cerr << "Не удалось запустить Frontend UI\n";
+    }
 
     // 6. Ожидаем завершения сервера
     if (serverThread.joinable()) {

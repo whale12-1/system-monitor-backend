@@ -2,16 +2,25 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 
+#include "ProcessLauncher.h"
 #include <windows.h>
 #include <tlhelp32.h>
 #include <iostream>
 #include <string>
-#include "ProcessLauncher.h"
 #include <vector>
 
 static PROCESS_INFORMATION g_uiProcessInfo = { 0 };
 
-bool LaunchFrontendUI() {
+bool LaunchFrontendUI(int argc, char* argv[]) {
+    // 0. Проверяем флаг --no-ui (или -noui)
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--no-ui" || arg == "-noui") {
+            std::cout << "[Backend] Dev Mode: no UI start (--no-ui).\n";
+            return true; // Возвращаем true, будто запуск прошёл штатно
+        }
+    }
+
     STARTUPINFOW si = { sizeof(si) };
 
     // 1. Получаем полный путь к папке, где находится сам SystemMonitor.exe
@@ -21,17 +30,16 @@ bool LaunchFrontendUI() {
     std::wstring currentDir(exePath);
     size_t lastSlash = currentDir.find_last_of(L"\\/");
     if (lastSlash != std::string::npos) {
-        currentDir = currentDir.substr(0, lastSlash + 1); // Оставляем путь с слэшем на конце
+        currentDir = currentDir.substr(0, lastSlash + 1);
     }
 
-    // 2. Формируем полный путь к UI: "C:/.../x64/Release/SystemMonitorUI.exe"
+    // 2. Формируем полный путь к UI
     std::wstring uiPath = currentDir + L"SystemMonitorUI.exe";
 
-    // CreateProcessW требует мутируемый буфер wchar_t
     std::vector<wchar_t> cmdLine(uiPath.begin(), uiPath.end());
     cmdLine.push_back(L'\0');
 
-    // 3. Запускаем процесс с явным указанием рабочей директории (currentDir)
+    // 3. Запускаем процесс
     BOOL success = CreateProcessW(
         NULL,
         cmdLine.data(),
@@ -40,17 +48,17 @@ bool LaunchFrontendUI() {
         FALSE,
         0,
         NULL,
-        currentDir.c_str(), // Рабочая директория = папка с бинарниками
+        currentDir.c_str(),
         &si,
         &g_uiProcessInfo
     );
 
     if (success) {
-        std::cout << "[Backend] SystemMonitorUI.exe успешно запущен!\n";
+        std::cout << "[Backend] SystemMonitorUI.exe is launched successfully!\n";
         return true;
     }
     else {
-        std::cerr << "[Backend] Ошибка запуска SystemMonitorUI.exe. Код: "
+        std::cerr << "[Backend] Erroe while starting SystemMonitorUI.exe. Code: "
             << GetLastError() << "\n";
         return false;
     }

@@ -269,10 +269,10 @@ void ServerApp::SetupRoutes() {
 
 
     // POST /api/kill
-    CROW_ROUTE(m_App, "/api/kill").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+    CROW_ROUTE(m_App, "/api/process/kill").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
         auto body = crow::json::load(req.body);
         if (!body || !body.has("pid")) {
-            LOG_WARN("[HTTP POST /api/kill] Bad JSON or missing pid");
+            LOG_WARN("[HTTP POST /api/process/kill] Bad JSON or missing pid");
             crow::response response(400, "{\"error\": \"Bad JSON or missing pid\"}");
             return response;
         }
@@ -295,6 +295,63 @@ void ServerApp::SetupRoutes() {
         return response;
         });
 
+    CROW_ROUTE(m_App, "/api/startup_item/kill").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("name") || !body.has("location")) {
+            LOG_WARN("[HTTP POST /api/startup_item/kill] Bad JSON or missing name or location");
+            crow::response response(400, "{\"error\": \"Bad JSON or missing name ot location\"}");
+            return response;
+        }
+
+        std::string name = body["name"].s();
+        std::string location = body["location"].s();
+
+        bool ok = m_Provider->RemoveStartupItem(name, location);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/startup_item/kill] Process PID {} killed successfully", name);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/startup_item/kill] Failed to kill process PID {}", name);
+        }
+
+        crow::json::wvalue responseJson;
+        responseJson["success"] = ok;
+        responseJson["name"] = name;
+        responseJson["location"] = location;
+
+        crow::response response(ok ? 200 : 500, responseJson);
+        return response;
+        });
+
+    CROW_ROUTE(m_App, "/api/startup_item/enable").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("name") || !body.has("location")) {
+            LOG_WARN("[HTTP POST /api/startup_item/enable] Bad JSON or missing name or location");
+            crow::response response(400, "{\"error\": \"Bad JSON or missing name ot location\"}");
+            return response;
+        }
+
+        std::string name = body["name"].s();
+        std::string location = body["location"].s();
+
+        bool ok = m_Provider->EnableStartupItem(name, location);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/startup_item/enable] Process PID {} killed successfully", name);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/startup_item/enable] Failed to kill process PID {}", name);
+        }
+
+        crow::json::wvalue responseJson;
+        responseJson["success"] = ok;
+        responseJson["name"] = name;
+        responseJson["location"] = location;
+
+        crow::response response(ok ? 200 : 500, responseJson);
+        return response;
+        });
 }
 
 void ServerApp::Run(uint16_t port) {

@@ -21,6 +21,7 @@ public:
     virtual std::vector<StartupItem> GetStartupItems() const = 0;
     virtual std::vector<TemperatureMetrics> GetTemperatures() const = 0;
     virtual bool RemoveStartupItem(const std::string& name, const std::string& location) const = 0;
+    virtual bool EnableStartupItem(const std::string& name, const std::string& location) const = 0;
     virtual bool OpenFileLocation(unsigned long pid) const = 0;
     virtual std::vector<GPUMetrics> GetGPUMetrics() const = 0;
 };

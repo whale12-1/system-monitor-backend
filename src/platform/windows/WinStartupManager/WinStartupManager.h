@@ -9,4 +9,5 @@ public:
 
     std::vector<StartupItem> GetStartupItems() const;
     bool RemoveStartupItem(const std::string& name, const std::string& location) const;
+    bool EnableStartupItem(const std::string& name, const std::string& location) const;
 };
