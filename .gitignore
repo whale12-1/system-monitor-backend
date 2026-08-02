@@ -1,4 +1,15 @@
 # Visual Studio / MSVC build outputs
+# Игнорировать отдельную папку logs в любой директории
+logs/
+/logs/
+
+# Игнорировать все файлы с расширением .log
+*.log
+
+# Игнорировать конкретные служебные логи Visual Studio и Windows
+*.tlog
+*.txt.log
+
 .vs/
 x64/
 x86/
