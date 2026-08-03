@@ -23,6 +23,7 @@
     <ClCompile Include="src\platform\windows\WindowsApiMetricsProvider.cpp" />
     <ClCompile Include="src\platform\windows\WinGPUProvider\WinGPUProvider.cpp" />
     <ClCompile Include="src\platform\windows\WinProcessManager\WinProcessManager.cpp" />
+    <ClCompile Include="src\platform\windows\WinServicesManager\WinServicesManager.cpp" />
     <ClCompile Include="src\platform\windows\WinStartupManager\WinStartupManager.cpp" />
     <ClCompile Include="src\platform\windows\WinSystemInfoProvider\WinSystemInfoProvider.cpp" />
     <ClCompile Include="src\platform\windows\WinTemperatureProvider\WinTemperatureProvider.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="src\platform\windows\WindowsUtils.h" />
     <ClInclude Include="src\platform\windows\WinGPUProvider\WinGPUProvider.h" />
     <ClInclude Include="src\platform\windows\WinProcessManager\WinProcessManager.h" />
+    <ClInclude Include="src\platform\windows\WinServicesManager\WinServicesManager.h" />
     <ClInclude Include="src\platform\windows\WinStartupManager\WinStartupManager.h" />
     <ClInclude Include="src\platform\windows\WinSystemInfoProvider\WinSystemInfoProvider.h" />
     <ClInclude Include="src\platform\windows\WinTemperatureProvider\WinTemperatureProvider.h" />
