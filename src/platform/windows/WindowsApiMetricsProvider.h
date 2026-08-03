@@ -7,6 +7,7 @@
 #include "WinSystemInfoProvider/WinSystemInfoProvider.h"
 #include "WinTemperatureProvider/WinTemperatureProvider.h"
 #include "WinGPUProvider/WinGPUProvider.h"
+#include "WinServicesManager/WinServicesManager.h"
 
 class WindowsApiMetricsProvider : public ISystemMetricsProvider {
 private:
@@ -15,6 +16,7 @@ private:
     WinSystemInfoProvider m_SystemInfoProvider;
     WinTemperatureProvider m_TemperatureProvider;
     WinGPUProvider m_GPUProvider;
+    WinServicesManager m_ServiceManager;
 
 public:
     WindowsApiMetricsProvider() = default;
@@ -84,5 +86,23 @@ public:
     std::vector<GPUMetrics> GetGPUMetrics() const {
         return m_GPUProvider.GetGPUMetrics();
     }
-
+    bool DeleteServiceItem(const std::string& serviceName) const {
+        return m_ServiceManager.DeleteWinService(serviceName);
+    }
+    bool EnableServiceItem(const std::string& serviceName) const {
+        return m_ServiceManager.StartWinService(serviceName);
+    }
+    bool DisableServiceItem(const std::string& serviceName) const {
+        return m_ServiceManager.StopWinService(serviceName);
+    }
+    std::vector<ServiceItem> GetServiceItems() const {
+        return m_ServiceManager.GetServices();
+    }
+    bool CreateWinService(const std::string& serviceName,
+        const std::string& displayName,
+        const std::string& binaryPath,
+        bool autoStart = true) const 
+    {
+        return m_ServiceManager.CreateWinService(serviceName, displayName, binaryPath, autoStart);
+    }
 };

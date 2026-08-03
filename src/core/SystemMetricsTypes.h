@@ -66,3 +66,11 @@ struct GPUMetrics {
 	uint64_t MemoryUsed = 0;
 	bool IsAvailable = false;
 };
+
+struct ServiceItem {
+	std::string Name;        // Системное имя (например, "wuauserv")
+	std::string DisplayName; // Отображаемое имя ("Центр обновления Windows")
+	std::string Status;      // "Running", "Stopped", "Paused", etc.
+	std::string StartType;   // "Automatic", "Manual", "Disabled", "Unknown"
+	std::string Path;        // Путь к исполняемому .exe файлу
+};

@@ -1,7 +1,7 @@
-#define _CRT_SECURE_NO_WARNINGS
+п»ї#define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
 #include "WinSystemInfoProvider.h"
-#include "../WindowsUtils.h" // Путь к WindowsUtils.h в родительской директории
+#include "../WindowsUtils.h" // РџСѓС‚СЊ Рє WindowsUtils.h РІ СЂРѕРґРёС‚РµР»СЊСЃРєРѕР№ РґРёСЂРµРєС‚РѕСЂРёРё
 
 #include <winsock2.h>
 #include <ws2tcpip.h>

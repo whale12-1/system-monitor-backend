@@ -268,7 +268,7 @@ void ServerApp::SetupRoutes() {
         });
 
 
-    // POST /api/kill
+    // POST /api/process/kill
     CROW_ROUTE(m_App, "/api/process/kill").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
         auto body = crow::json::load(req.body);
         if (!body || !body.has("pid")) {
@@ -295,6 +295,7 @@ void ServerApp::SetupRoutes() {
         return response;
         });
 
+    // POST /api/startup_item/kill
     CROW_ROUTE(m_App, "/api/startup_item/kill").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
         auto body = crow::json::load(req.body);
         if (!body || !body.has("name") || !body.has("location")) {
@@ -324,6 +325,7 @@ void ServerApp::SetupRoutes() {
         return response;
         });
 
+    //POST /api/startup_item/enable
     CROW_ROUTE(m_App, "/api/startup_item/enable").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
         auto body = crow::json::load(req.body);
         if (!body || !body.has("name") || !body.has("location")) {
@@ -351,6 +353,143 @@ void ServerApp::SetupRoutes() {
 
         crow::response response(ok ? 200 : 500, responseJson);
         return response;
+        });
+
+    //GET /api/services
+    CROW_ROUTE(m_App, "/api/services")([this]() {
+        std::vector<ServiceItem> Services = m_Provider->GetServiceItems();
+        std::vector<crow::json::wvalue> ServiceList;
+        ServiceList.reserve(Services.size());
+        for (const auto& S : Services) {
+            crow::json::wvalue Com;
+            Com["name"] = S.Name;
+            Com["display_name"] = S.DisplayName;
+            Com["status"] = S.Status;
+            Com["start_type"] = S.StartType;
+            Com["path"] = S.Path;
+            ServiceList.push_back(std::move(Com));
+        }
+        crow::json::wvalue ServiceItems;
+        ServiceItems["count"] = ServiceList.size();
+        ServiceItems["service_items"] = std::move(ServiceList);
+        crow::response response(ServiceItems);
+        return response;
+        });
+
+    //POST /api/service_item/enable
+    CROW_ROUTE(m_App, "/api/service_item/enable").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("name")) {
+            LOG_WARN("[HTTP POST /api/service_item/enable] Bad JSON or missing name");
+            crow::response response(400, "{\"error\": \"Bad JSON or missing name\"}");
+            return response;
+        }
+
+        std::string Name = body["name"].s();
+
+        bool ok = m_Provider->EnableServiceItem(Name);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/service_item/enable] Process name {} was enabled successfully", Name);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/service_item/enable] Failed to enable service name {}", Name);
+        }
+
+        crow::json::wvalue responseJson;
+        responseJson["success"] = ok;
+        responseJson["name"] = Name;
+
+        crow::response response(ok ? 200 : 500, responseJson);
+        return response;
+        });
+
+    //POST /api/service_item/disable
+    CROW_ROUTE(m_App, "/api/service_item/disable").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("name")) {
+            LOG_WARN("[HTTP POST /api/service_item/disable] Bad JSON or missing name");
+            crow::response response(400, "{\"error\": \"Bad JSON or missing name\"}");
+            return response;
+        }
+
+        std::string Name = body["name"].s();
+
+        bool ok = m_Provider->DisableServiceItem(Name);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/service_item/disable] Process name {} was disabled successfully", Name);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/service_item/disable] Failed to disable service name {}", Name);
+        }
+
+        crow::json::wvalue responseJson;
+        responseJson["success"] = ok;
+        responseJson["name"] = Name;
+
+        crow::response response(ok ? 200 : 500, responseJson);
+        return response;
+        });
+
+    // POST /api/service_item/create_new
+    CROW_ROUTE(m_App, "/api/service_item/create_new").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("name") || !body.has("display_name") || !body.has("path") || !body.has("auto_start")) {
+            LOG_WARN("[HTTP POST /api/service_item/create_new] Bad JSON or missing paramethers");
+            crow::response response(400, "{\"error\": \"Bad JSON or missing paramethers\"}");
+            return response;
+        }
+
+        std::string Name = body["name"].s();
+        std::string DisplayName = body["display_name"].s();
+        std::string Path = body["path"].s();
+        bool AutoStart =body["auto_start"].b();
+
+        bool ok = m_Provider->CreateWinService(Name, DisplayName, Path, AutoStart);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/service_item/create_new] Process name {} was created successfully", Name);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/service_item/create_new] Failed to create service name {}", Name);
+        }
+
+        crow::json::wvalue responseJson;
+        responseJson["success"] = ok;
+        responseJson["name"] = Name;
+        responseJson["display_name"] = DisplayName;
+        responseJson["path"] = Path;
+        responseJson["auto_start"] = AutoStart;
+
+        crow::response response(ok ? 200 : 500, responseJson);
+        return response;
+        });
+
+    // POST /api/service_item/delete
+    CROW_ROUTE(m_App, "/api/service_item/delete").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("name")) {
+            LOG_WARN("[HTTP POST /api/service_item/delete] Bad JSON or missing name");
+            return crow::response(400, "{\"error\": \"Bad JSON or missing name\"}");
+        }
+
+        std::string Name = body["name"].s();
+
+        bool ok = m_Provider->DeleteServiceItem(Name);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/service_item/delete] Service {} was deleted successfully", Name);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/service_item/delete] Failed to delete service {}", Name);
+        }
+
+        crow::json::wvalue responseJson;
+        responseJson["success"] = ok;
+        responseJson["name"] = Name;
+
+        return crow::response(ok ? 200 : 500, responseJson);
         });
 }
 
