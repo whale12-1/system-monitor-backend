@@ -514,6 +514,36 @@ void ServerApp::SetupRoutes() {
         res["new_rate"] = newRate;
         return crow::response(200, res);
         });
+
+    //POST /api/process/new
+    CROW_ROUTE(m_App, "/api/process/new").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("path") || !body.has("arguments") || !body.has("is_admin")) {
+            LOG_WARN("[HTTP POST /api/process/new] bad JSON or missing paramethers");
+            return crow::response(400, "{\"error\": \"Bad JSON or missing paramethers\"}");
+        }
+
+        std::string Path = body["path"].s();
+        std::string Args = body["arguments"].s();
+        bool IsAdmin = body["is_admin"].b();
+
+        bool ok = m_Provider->CreateNewProcess(Path, Args, IsAdmin);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/process/new] Process {} was launched successfully", Path);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/process/new] Failed to launch process {}", Path);
+        }
+
+        crow::json::wvalue responseJson;
+        responseJson["success"] = ok;
+        responseJson["path"] = Path;
+        responseJson["arguments"] = Args;
+        responseJson["is_admin"] = IsAdmin;
+
+        return crow::response(ok ? 200 : 500, responseJson);
+        });
 }
 
 void ServerApp::Run(uint16_t port) {

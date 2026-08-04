@@ -9,5 +9,8 @@ public:
 
     std::vector<ProcessMetrics> GetProcesses() const;
     bool KillProcess(unsigned long pid) const;
+    bool CreateNewProcess(const std::string& executablePath,
+        const std::string& arguments = "",
+        bool asAdmin = false) const;
     bool OpenFileLocation(unsigned long pid) const;
 };

@@ -33,4 +33,7 @@ public:
         const std::string& displayName,
         const std::string& binaryPath,
         bool autoStart = true) const = 0;
+    virtual bool CreateNewProcess(const std::string& executablePath,
+        const std::string& arguments = "",
+        bool asAdmin = false) const = 0;
 };

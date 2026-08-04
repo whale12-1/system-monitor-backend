@@ -176,3 +176,67 @@ bool WinProcessManager::OpenFileLocation(unsigned long pid) const {
 
     return false;
 }
+
+bool WinProcessManager::CreateNewProcess(const std::string& executablePath,
+    const std::string& arguments,
+    bool asAdmin) const
+{
+    if (executablePath.empty()) {
+        return false;
+    }
+
+    // Преобразуем std::string в std::wstring для корректной работы с Unicode
+    std::wstring wPath(executablePath.begin(), executablePath.end());
+    std::wstring wArgs(arguments.begin(), arguments.end());
+
+    if (asAdmin) {
+        // Запуск от имени администратора через UAC
+        SHELLEXECUTEINFOW sei = { sizeof(sei) };
+        sei.lpVerb = L"runas";
+        sei.lpFile = wPath.c_str();
+        sei.lpParameters = wArgs.empty() ? nullptr : wArgs.c_str();
+        sei.nShow = SW_SHOWNORMAL;
+        sei.fMask = SEE_MASK_NOCLOSEPROCESS;
+
+        if (ShellExecuteExW(&sei)) {
+            if (sei.hProcess) {
+                CloseHandle(sei.hProcess);
+            }
+            return true;
+        }
+        return false;
+    }
+    else {
+        // Обычный запуск через CreateProcessW
+        STARTUPINFOW si{};
+        si.cb = sizeof(si);
+        PROCESS_INFORMATION pi{};
+
+        // Для CreateProcessW аргументы должны передаваться единой командной строкой
+        std::wstring commandLine = L"\"" + wPath + L"\"";
+        if (!wArgs.empty()) {
+            commandLine += L" " + wArgs;
+        }
+
+        BOOL success = CreateProcessW(
+            nullptr,
+            &commandLine[0], // Буфер должен быть изменяемым
+            nullptr,
+            nullptr,
+            FALSE,
+            0,
+            nullptr,
+            nullptr,
+            &si,
+            &pi
+        );
+
+        if (success) {
+            // Закрываем дескрипторы, так как управление процессом нам дальше не требуется
+            CloseHandle(pi.hThread);
+            CloseHandle(pi.hProcess);
+            return true;
+        }
+        return false;
+    }
+}

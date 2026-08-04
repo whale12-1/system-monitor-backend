@@ -105,4 +105,11 @@ public:
     {
         return m_ServiceManager.CreateWinService(serviceName, displayName, binaryPath, autoStart);
     }
+
+    bool CreateNewProcess(const std::string& executablePath,
+        const std::string& arguments = "",
+        bool asAdmin = false) const
+    {
+        return m_ProcessManager.CreateNewProcess(executablePath, arguments, asAdmin);
+    }
 };
