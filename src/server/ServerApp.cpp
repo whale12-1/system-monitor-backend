@@ -44,13 +44,12 @@ auto SerializeGpuMetrics = [](const std::vector<GPUMetrics>& gpuList) {
 
 void ServerApp::StartCollectorThread() {
     m_CollectorThread = std::jthread([this](std::stop_token stopToken) {
-        LOG_INFO("Collector thread started (interval: 500ms)");
+        LOG_INFO("Collector thread started (interval: {} ms)", m_Rate.load());
         auto prevTime = std::chrono::steady_clock::now();
         NetworkMetrics prevNet = m_Provider->GetNetworkMetrics();
 
         while (!stopToken.stop_requested()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
+            std::this_thread::sleep_for(std::chrono::milliseconds(m_Rate.load()));
             try {
                 auto currentTime = std::chrono::steady_clock::now();
                 double deltaTime = std::chrono::duration<double>(currentTime - prevTime).count();
@@ -490,6 +489,30 @@ void ServerApp::SetupRoutes() {
         responseJson["name"] = Name;
 
         return crow::response(ok ? 200 : 500, responseJson);
+        });
+
+    //POST /api/change_rate
+    CROW_ROUTE(m_App, "/api/change_rate").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("rate")) {
+            LOG_WARN("[HTTP POST /api/change_rate] bad JSON or missing rate");
+            return crow::response(400, "{\"error\": \"Bad JSON or missing rate\"}");
+        }
+
+        int newRate = body["rate"].i();
+        if (newRate < 50) { // Валидация разумного минимума
+            return crow::response(400, "{\"error\": \"Rate is too small\"}");
+        }
+
+        // Потокобезопасная запись
+        m_Rate.store(newRate);
+
+        LOG_INFO("[HTTP POST /api/change_rate] Rate updated to {} ms", newRate);
+
+        crow::json::wvalue res;
+        res["success"] = true;
+        res["new_rate"] = newRate;
+        return crow::response(200, res);
         });
 }
 

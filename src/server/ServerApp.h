@@ -27,6 +27,7 @@ private:
     void StartCollectorThread();
 
 private:
+    std::atomic<int> m_Rate{ 500 };
     SharedState& m_State;
     std::unique_ptr<ISystemMetricsProvider> m_Provider;
     crow::App<crow::CORSHandler> m_App;
