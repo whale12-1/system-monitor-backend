@@ -74,3 +74,20 @@ struct ServiceItem {
 	std::string StartType;   // "Automatic", "Manual", "Disabled", "Unknown"
 	std::string Path;        // Путь к исполняемому .exe файлу
 };
+
+enum class ProcessPriorityLevel {
+	Idle,         // Низкий IDLE_PRIORITY_CLASS
+	BelowNormal,  // Ниже среднего BELOW_NORMAL_PRIORITY_CLASS
+	Normal,       // Обычный NORMAL_PRIORITY_CLASS
+	AboveNormal,  // Выше среднего ABOVE_NORMAL_PRIORITY_CLASS
+	High,         // Высокий HIGH_PRIORITY_CLASS
+	Realtime      // Реального времени REALTIME_PRIORITY_CLASS
+};
+
+struct ProcessDetails {
+	unsigned long Pid = 0;
+	ProcessPriorityLevel Priority = ProcessPriorityLevel::Normal;
+	uint64_t AffinityMask = 0;
+	bool IsEcoModeEnabled = false;
+	bool Success = false;
+};

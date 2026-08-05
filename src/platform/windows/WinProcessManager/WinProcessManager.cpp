@@ -240,3 +240,132 @@ bool WinProcessManager::CreateNewProcess(const std::string& executablePath,
         return false;
     }
 }
+
+// ============================================================================
+// 1. Изменение приоритета процесса
+// ============================================================================
+bool WinProcessManager::SetProcessPriority(unsigned long pid, ProcessPriorityLevel priority) const {
+    if (pid <= 4) return false;
+
+    // Требуется права PROCESS_SET_INFORMATION
+    UniqueHandle hProcess(OpenProcess(PROCESS_SET_INFORMATION, FALSE, static_cast<DWORD>(pid)));
+    if (!hProcess.get()) return false;
+
+    DWORD priorityClass = NORMAL_PRIORITY_CLASS;
+
+    switch (priority) {
+    case ProcessPriorityLevel::Idle:        priorityClass = IDLE_PRIORITY_CLASS; break;
+    case ProcessPriorityLevel::BelowNormal: priorityClass = BELOW_NORMAL_PRIORITY_CLASS; break;
+    case ProcessPriorityLevel::Normal:      priorityClass = NORMAL_PRIORITY_CLASS; break;
+    case ProcessPriorityLevel::AboveNormal: priorityClass = ABOVE_NORMAL_PRIORITY_CLASS; break;
+    case ProcessPriorityLevel::High:       priorityClass = HIGH_PRIORITY_CLASS; break;
+    case ProcessPriorityLevel::Realtime:   priorityClass = REALTIME_PRIORITY_CLASS; break;
+    }
+
+    return SetPriorityClass(hProcess.get(), priorityClass) != FALSE;
+}
+
+// ============================================================================
+// 2. Ограничение количества ядер (CPU Affinity)
+// Пример: mask = 0x05 (двоичное 00000101) задействует Ядро 0 и Ядро 2
+// ============================================================================
+bool WinProcessManager::SetProcessAffinity(unsigned long pid, uint64_t affinityMask) const {
+    if (pid <= 4 || affinityMask == 0) return false;
+
+    // Требуются права PROCESS_SET_INFORMATION
+    UniqueHandle hProcess(OpenProcess(PROCESS_SET_INFORMATION, FALSE, static_cast<DWORD>(pid)));
+    if (!hProcess.get()) return false;
+
+    return SetProcessAffinityMask(hProcess.get(), static_cast<DWORD_PTR>(affinityMask)) != FALSE;
+}
+
+// ============================================================================
+// 3. Энергопотребление (Power Throttling / Эко-режим в Windows 10/11)
+// Понижает фоновый приоритет потоков и отправляет процесс на энергоэффективные E-ядра
+// ============================================================================
+bool WinProcessManager::SetProcessEcoMode(unsigned long pid, bool enableEcoMode) const {
+    if (pid <= 4) return false;
+
+    // Права PROCESS_SET_INFORMATION необходимы и для Throttling, и для SetPriorityClass
+    UniqueHandle hProcess(OpenProcess(PROCESS_SET_INFORMATION, FALSE, static_cast<DWORD>(pid)));
+    if (!hProcess.get()) return false;
+
+    // 1. Устанавливаем Power Throttling
+    PROCESS_POWER_THROTTLING_STATE powerThrottling{};
+    powerThrottling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
+
+    if (enableEcoMode) {
+        powerThrottling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
+        powerThrottling.StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
+    }
+    else {
+        powerThrottling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
+        powerThrottling.StateMask = 0;
+    }
+
+    BOOL throttlingSuccess = SetProcessInformation(
+        hProcess.get(),
+        ProcessPowerThrottling,
+        &powerThrottling,
+        sizeof(powerThrottling)
+    );
+
+    // 2. Меняем приоритет (Диспетчер задач требует IDLE_PRIORITY_CLASS для отрисовки зеленого листочка)
+    DWORD priorityClass = enableEcoMode ? IDLE_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS;
+    BOOL prioritySuccess = SetPriorityClass(hProcess.get(), priorityClass);
+
+    return throttlingSuccess && prioritySuccess;
+}
+
+// WinProcessManager.cpp
+
+ProcessDetails WinProcessManager::GetProcessDetails(unsigned long pid) const {
+    ProcessDetails details{};
+    details.Pid = pid;
+
+    if (pid <= 4) {
+        return details; // Success = false
+    }
+
+    UniqueHandle hProcess(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, static_cast<DWORD>(pid)));
+    if (!hProcess.get()) {
+        return details; // Success = false
+    }
+
+    // 1. Текущий класс приоритета
+    DWORD priorityClass = GetPriorityClass(hProcess.get());
+    if (priorityClass != 0) {
+        switch (priorityClass) {
+        case IDLE_PRIORITY_CLASS:         details.Priority = ProcessPriorityLevel::Idle; break;
+        case BELOW_NORMAL_PRIORITY_CLASS: details.Priority = ProcessPriorityLevel::BelowNormal; break;
+        case NORMAL_PRIORITY_CLASS:       details.Priority = ProcessPriorityLevel::Normal; break;
+        case ABOVE_NORMAL_PRIORITY_CLASS: details.Priority = ProcessPriorityLevel::AboveNormal; break;
+        case HIGH_PRIORITY_CLASS:         details.Priority = ProcessPriorityLevel::High; break;
+        case REALTIME_PRIORITY_CLASS:     details.Priority = ProcessPriorityLevel::Realtime; break;
+        default:                          details.Priority = ProcessPriorityLevel::Normal; break;
+        }
+    }
+
+    // 2. Affinity Mask (какие ядра использует этот процесс)
+    DWORD_PTR procAffinity = 0;
+    DWORD_PTR sysAffinity = 0;
+    if (GetProcessAffinityMask(hProcess.get(), &procAffinity, &sysAffinity)) {
+        details.AffinityMask = static_cast<uint64_t>(procAffinity);
+    }
+
+    // 3. Режим энергосбережения / Power Throttling
+    PROCESS_POWER_THROTTLING_STATE powerThrottling{};
+    powerThrottling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
+
+    if (GetProcessInformation(
+        hProcess.get(),
+        ProcessPowerThrottling,
+        &powerThrottling,
+        sizeof(powerThrottling)))
+    {
+        details.IsEcoModeEnabled = (powerThrottling.StateMask & PROCESS_POWER_THROTTLING_EXECUTION_SPEED) != 0;
+    }
+
+    details.Success = true;
+    return details;
+}

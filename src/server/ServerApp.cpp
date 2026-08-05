@@ -544,6 +544,131 @@ void ServerApp::SetupRoutes() {
 
         return crow::response(ok ? 200 : 500, responseJson);
         });
+
+    // ------------------------------------------------------------------------
+    // Process Details & Management Routes
+    // ------------------------------------------------------------------------
+
+    // GET /api/process/details
+    CROW_ROUTE(m_App, "/api/process/details")([this](const crow::request& req) {
+        auto pidStr = req.url_params.get("pid");
+        if (!pidStr) {
+            LOG_WARN("[HTTP GET /api/process/details] Missing 'pid' query parameter");
+            return crow::response(400, "{\"error\": \"Missing 'pid' parameter\"}");
+        }
+
+        unsigned long pid = 0;
+        try {
+            pid = std::stoul(pidStr);
+        }
+        catch (...) {
+            return crow::response(400, "{\"error\": \"Invalid 'pid' parameter\"}");
+        }
+
+        ProcessDetails details = m_Provider->GetProcessDetails(pid);
+
+        if (!details.Success) {
+            LOG_ERROR("[HTTP GET /api/process/details] Failed to get details for PID {}", pid);
+            return crow::response(404, "{\"error\": \"Failed to retrieve process details or process not found\"}");
+        }
+
+        crow::json::wvalue res;
+        res["pid"] = details.Pid;
+        res["priority"] = static_cast<int>(details.Priority);
+        res["affinity_mask"] = details.AffinityMask;
+        res["is_eco_mode"] = details.IsEcoModeEnabled;
+
+        return crow::response(200, res);
+        });
+
+    // POST /api/process/set_priority
+    CROW_ROUTE(m_App, "/api/process/set_priority").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("pid") || !body.has("priority")) {
+            LOG_WARN("[HTTP POST /api/process/set_priority] Bad JSON or missing parameters");
+            return crow::response(400, "{\"error\": \"Bad JSON or missing parameters\"}");
+        }
+
+        unsigned long pid = static_cast<unsigned long>(body["pid"].i());
+        int priorityInt = body["priority"].i();
+
+        if (priorityInt < 0 || priorityInt > 5) {
+            return crow::response(400, "{\"error\": \"Invalid priority level range (0-5)\"}");
+        }
+
+        ProcessPriorityLevel priority = static_cast<ProcessPriorityLevel>(priorityInt);
+        bool ok = m_Provider->SetProcessPriority(pid, priority);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/process/set_priority] Set priority level {} for PID {}", priorityInt, pid);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/process/set_priority] Failed to set priority for PID {}", pid);
+        }
+
+        crow::json::wvalue res;
+        res["success"] = ok;
+        res["pid"] = pid;
+        res["priority"] = priorityInt;
+
+        return crow::response(ok ? 200 : 500, res);
+        });
+
+    // POST /api/process/set_affinity
+    CROW_ROUTE(m_App, "/api/process/set_affinity").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("pid") || !body.has("affinity_mask")) {
+            LOG_WARN("[HTTP POST /api/process/set_affinity] Bad JSON or missing parameters");
+            return crow::response(400, "{\"error\": \"Bad JSON or missing parameters\"}");
+        }
+
+        unsigned long pid = static_cast<unsigned long>(body["pid"].i());
+        uint64_t mask = static_cast<uint64_t>(body["affinity_mask"].i());
+
+        bool ok = m_Provider->SetProcessAffinity(pid, mask);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/process/set_affinity] Set affinity mask {} for PID {}", mask, pid);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/process/set_affinity] Failed to set affinity mask for PID {}", pid);
+        }
+
+        crow::json::wvalue res;
+        res["success"] = ok;
+        res["pid"] = pid;
+        res["affinity_mask"] = mask;
+
+        return crow::response(ok ? 200 : 500, res);
+        });
+
+    // POST /api/process/set_eco_mode
+    CROW_ROUTE(m_App, "/api/process/set_eco_mode").methods(crow::HTTPMethod::POST)([this](const crow::request& req) {
+        auto body = crow::json::load(req.body);
+        if (!body || !body.has("pid") || !body.has("enable")) {
+            LOG_WARN("[HTTP POST /api/process/set_eco_mode] Bad JSON or missing parameters");
+            return crow::response(400, "{\"error\": \"Bad JSON or missing parameters\"}");
+        }
+
+        unsigned long pid = static_cast<unsigned long>(body["pid"].i());
+        bool enable = body["enable"].b();
+
+        bool ok = m_Provider->SetProcessEcoMode(pid, enable);
+
+        if (ok) {
+            LOG_INFO("[HTTP POST /api/process/set_eco_mode] Eco mode {} for PID {}", enable ? "enabled" : "disabled", pid);
+        }
+        else {
+            LOG_ERROR("[HTTP POST /api/process/set_eco_mode] Failed to set eco mode for PID {}", pid);
+        }
+
+        crow::json::wvalue res;
+        res["success"] = ok;
+        res["pid"] = pid;
+        res["is_eco_mode"] = enable;
+
+        return crow::response(ok ? 200 : 500, res);
+        });
 }
 
 void ServerApp::Run(uint16_t port) {

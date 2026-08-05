@@ -112,4 +112,20 @@ public:
     {
         return m_ProcessManager.CreateNewProcess(executablePath, arguments, asAdmin);
     }
+
+    ProcessDetails GetProcessDetails(unsigned long pid) const {
+        return m_ProcessManager.GetProcessDetails(pid);
+    }
+
+    bool SetProcessPriority(unsigned long pid, ProcessPriorityLevel priority) const {
+        return m_ProcessManager.SetProcessPriority(pid, priority);
+    }
+    bool SetProcessAffinity(unsigned long pid, uint64_t affinityMask) const {
+        return m_ProcessManager.SetProcessAffinity(pid, affinityMask);
+    }
+
+    bool SetProcessEcoMode(unsigned long pid, bool enableEcoMode) const {
+        return m_ProcessManager.SetProcessEcoMode(pid, enableEcoMode);
+    }
 };
+

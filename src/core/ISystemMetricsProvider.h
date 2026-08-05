@@ -36,4 +36,8 @@ public:
     virtual bool CreateNewProcess(const std::string& executablePath,
         const std::string& arguments = "",
         bool asAdmin = false) const = 0;
+    virtual bool SetProcessPriority(unsigned long pid, ProcessPriorityLevel priority) const = 0;
+    virtual bool SetProcessAffinity(unsigned long pid, uint64_t affinityMask) const = 0;
+    virtual bool SetProcessEcoMode(unsigned long pid, bool enableEcoMode) const = 0;
+    virtual ProcessDetails GetProcessDetails(unsigned long pid) const = 0;
 };
