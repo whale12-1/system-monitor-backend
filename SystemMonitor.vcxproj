@@ -20,6 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\platform\linux_android\LinuxGPUProvider\LinuxGPUProvider.cpp" />
+    <ClCompile Include="src\platform\linux_android\LinuxProcessManager\LinuxProcessManager.cpp" />
+    <ClCompile Include="src\platform\linux_android\LinuxServiceManager\LinuxServiceManager.cpp" />
+    <ClCompile Include="src\platform\linux_android\LinuxStartupManager\LinuxStartupManager.cpp" />
+    <ClCompile Include="src\platform\linux_android\LinuxSystemInfoProvider\LinuxSystemInfoProvider.cpp" />
+    <ClCompile Include="src\platform\linux_android\LinuxTemperatureProvider\LinuxTemperatureProvider.cpp" />
     <ClCompile Include="src\platform\windows\WindowsApiMetricsProvider.cpp" />
     <ClCompile Include="src\platform\windows\WinGPUProvider\WinGPUProvider.cpp" />
     <ClCompile Include="src\platform\windows\WinProcessManager\WinProcessManager.cpp" />
@@ -29,6 +35,7 @@
     <ClCompile Include="src\platform\windows\WinTemperatureProvider\WinTemperatureProvider.cpp" />
     <ClCompile Include="src\ProcessLauncher.cpp" />
     <ClCompile Include="src\server\ServerApp.cpp" />
+    <ClCompile Include="src\SystemMonitorBridge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="platform\MetricsProviderFactory.h" />
@@ -36,6 +43,13 @@
     <ClInclude Include="src\core\ISystemMetricsProvider.h" />
     <ClInclude Include="src\core\SystemMetricsTypes.h" />
     <ClInclude Include="src\Logger.h" />
+    <ClInclude Include="src\platform\linux_android\LinuxGPUProvider\LinuxGPUProvider.h" />
+    <ClInclude Include="src\platform\linux_android\LinuxMetricsProvider.h" />
+    <ClInclude Include="src\platform\linux_android\LinuxProcessManager\LinuxProcessManager.h" />
+    <ClInclude Include="src\platform\linux_android\LinuxServiceManager\LinuxServiceManager.h" />
+    <ClInclude Include="src\platform\linux_android\LinuxStartupManager\LinuxStartupManager.h" />
+    <ClInclude Include="src\platform\linux_android\LinuxSystemInfoProvider\LinuxSystemInfoProvider.h" />
+    <ClInclude Include="src\platform\linux_android\LinuxTemperatureProvider\LinuxTemperatureProvider.h" />
     <ClInclude Include="src\platform\MetricsProviderFactory.h" />
     <ClInclude Include="src\platform\windows\WindowsApiMetricsProvider.h" />
     <ClInclude Include="src\platform\windows\WindowsUtils.h" />
@@ -48,9 +62,14 @@
     <ClInclude Include="src\ProcessLauncher.h" />
     <ClInclude Include="src\server\ServerApp.h" />
     <ClInclude Include="src\state\SharedState.h" />
+    <ClInclude Include="src\SystemMonitorBridge.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\.gitignore" />
+    <None Include="ui_mobile\lib\system_monitor_ffi.dart" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\CMakeLists.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -136,7 +155,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src</AdditionalIncludeDirectories>

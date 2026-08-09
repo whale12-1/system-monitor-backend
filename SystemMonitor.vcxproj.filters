@@ -45,6 +45,27 @@
     <ClCompile Include="src\platform\windows\WinServicesManager\WinServicesManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\linux_android\LinuxTemperatureProvider\LinuxTemperatureProvider.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\linux_android\LinuxSystemInfoProvider\LinuxSystemInfoProvider.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\linux_android\LinuxStartupManager\LinuxStartupManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\linux_android\LinuxServiceManager\LinuxServiceManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\linux_android\LinuxProcessManager\LinuxProcessManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\linux_android\LinuxGPUProvider\LinuxGPUProvider.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SystemMonitorBridge.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\state\SharedState.h">
@@ -98,8 +119,36 @@
     <ClInclude Include="src\platform\windows\WinServicesManager\WinServicesManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\platform\linux_android\LinuxMetricsProvider.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\linux_android\LinuxTemperatureProvider\LinuxTemperatureProvider.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\linux_android\LinuxSystemInfoProvider\LinuxSystemInfoProvider.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\linux_android\LinuxStartupManager\LinuxStartupManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\linux_android\LinuxServiceManager\LinuxServiceManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\linux_android\LinuxProcessManager\LinuxProcessManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\linux_android\LinuxGPUProvider\LinuxGPUProvider.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SystemMonitorBridge.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\.gitignore" />
+    <None Include="ui_mobile\lib\system_monitor_ffi.dart" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\CMakeLists.txt" />
   </ItemGroup>
 </Project>

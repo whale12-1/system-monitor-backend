@@ -10,6 +10,7 @@ logs/
 *.tlog
 *.txt.log
 
+ui_mobile/
 .vs/
 x64/
 x86/

@@ -37,5 +37,6 @@ private:
     std::unordered_set<crow::websocket::connection*> m_ActiveConnections;
 
     // Фоновый поток сбора
-    std::jthread m_CollectorThread;
+    std::thread m_CollectorThread;
+    std::atomic<bool> m_StopCollector{ false };
 };

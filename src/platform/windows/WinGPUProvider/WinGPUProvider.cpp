@@ -1,10 +1,11 @@
+#include <windows.h>
+#include <winternl.h>
 #include "WinGPUProvider.h"
 #include <iostream>
 #include <vector>
 #include <string>
 
 // Windows & Graphics Headers
-#include <windows.h>
 #include <dxgi1_4.h>
 #include <pdh.h>
 #include <pdhmsg.h>

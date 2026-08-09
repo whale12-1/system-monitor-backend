@@ -1,29 +1,28 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-
-#include "ProcessLauncher.h"
-#include <windows.h>
-#include <tlhelp32.h>
+﻿#include "ProcessLauncher.h"
 #include <iostream>
 #include <string>
 #include <vector>
 
+#if defined(_WIN32) || defined(_WIN64)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <tlhelp32.h>
+
 static PROCESS_INFORMATION g_uiProcessInfo = { 0 };
+#endif
 
 bool LaunchFrontendUI(int argc, char* argv[]) {
-    // 0. Проверяем флаг --no-ui (или -noui)
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--no-ui" || arg == "-noui") {
             std::cout << "[Backend] Dev Mode: no UI start (--no-ui).\n";
-            return true; // Возвращаем true, будто запуск прошёл штатно
+            return true;
         }
     }
 
+#if defined(_WIN32) || defined(_WIN64)
     STARTUPINFOW si = { sizeof(si) };
 
-    // 1. Получаем полный путь к папке, где находится сам SystemMonitor.exe
     wchar_t exePath[MAX_PATH];
     GetModuleFileNameW(NULL, exePath, MAX_PATH);
 
@@ -33,13 +32,10 @@ bool LaunchFrontendUI(int argc, char* argv[]) {
         currentDir = currentDir.substr(0, lastSlash + 1);
     }
 
-    // 2. Формируем полный путь к UI
     std::wstring uiPath = currentDir + L"SystemMonitorUI.exe";
-
     std::vector<wchar_t> cmdLine(uiPath.begin(), uiPath.end());
     cmdLine.push_back(L'\0');
 
-    // 3. Запускаем процесс
     BOOL success = CreateProcessW(
         NULL,
         cmdLine.data(),
@@ -58,13 +54,18 @@ bool LaunchFrontendUI(int argc, char* argv[]) {
         return true;
     }
     else {
-        std::cerr << "[Backend] Erroe while starting SystemMonitorUI.exe. Code: "
+        std::cerr << "[Backend] Error while starting SystemMonitorUI.exe. Code: "
             << GetLastError() << "\n";
         return false;
     }
+#else
+    std::cout << "[Backend] POSIX/Android environment. Skiped launching standalone EXE UI.\n";
+    return true;
+#endif
 }
 
 void TerminateFrontendUI() {
+#if defined(_WIN32) || defined(_WIN64)
     if (g_uiProcessInfo.hProcess != NULL) {
         TerminateProcess(g_uiProcessInfo.hProcess, 0);
         CloseHandle(g_uiProcessInfo.hProcess);
@@ -72,4 +73,5 @@ void TerminateFrontendUI() {
         g_uiProcessInfo.hProcess = NULL;
         g_uiProcessInfo.hThread = NULL;
     }
+#endif
 }
